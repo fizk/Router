@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+    dev:
+        container_name: router
+        build:
+            context: .
+            dockerfile: Dockerfile
+            args:
+                - ENV=development
+                - IDE_KEY=VSCODE
+        volumes:
+            - ./:/var/app
+    test:
+        container_name: router-test
+        build:
+            context: .
+            dockerfile: Dockerfile
+        command: bash -c "./vendor/bin/phpunit ./test/"

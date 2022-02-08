@@ -1,0 +1,16 @@
+{
+    "name": "einar.adalsteinsson/router",
+    "type": "library",
+    "require-dev": {
+        "laminas/laminas-diactoros": "^2.8",
+        "phpunit/phpunit": "^9.5"
+    },
+    "require": {
+        "psr/http-message": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Fizk\\Router\\": ["src/", "test/"]
+        }
+    }
+}

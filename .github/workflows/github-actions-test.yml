@@ -1,0 +1,12 @@
+name: CI/CD actions
+on: [push]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Check out repository code
+        uses: actions/checkout@v2
+      -
+        name: Run tests
+        run: docker-compose run test

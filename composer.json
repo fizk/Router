@@ -1,12 +1,26 @@
 {
-    "name": "einar.adalsteinsson/router",
+    "name": "fizk/router",
+    "description": "A very simple PSR-7 Router",
     "type": "library",
+    "license": "MIT",
+    "keywords":          [
+        "psr-7",
+        "router"
+    ],
+    "authors": [
+        {
+            "name":     "Einar Valur",
+            "email":    "fizk78@gmail.com",
+            "homepage": "https://einarvalur.co/"
+        }
+    ],
+    "require": {
+        "php": ">=8.1",
+        "psr/http-message": "^1.0"
+    },
     "require-dev": {
         "laminas/laminas-diactoros": "^2.8",
         "phpunit/phpunit": "^9.5"
-    },
-    "require": {
-        "psr/http-message": "^1.0"
     },
     "autoload": {
         "psr-4": {

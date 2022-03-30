@@ -9,18 +9,19 @@ use Psr\Http\Message\RequestInterface;
 use IteratorAggregate;
 use Traversable;
 use ArrayIterator;
+use JsonSerializable;
 
-class Route implements RouteInterface, IteratorAggregate
+class Route implements RouteInterface, IteratorAggregate, JsonSerializable
 {
     private string $name;
-    private string $route;
+    private string $pattern;
     private array $params = [];
     private array $children = [];
     private $position = 0;
 
-    public function __construct(string $name, string $route, array $params = [])
+    public function __construct(string $name, string $pattern, array $params = [])
     {
-        $this->route = $route;
+        $this->pattern = $pattern;
         $this->name = $name;
         $this->params = $params;
     }
@@ -28,7 +29,7 @@ class Route implements RouteInterface, IteratorAggregate
     public function match(RequestInterface $request, int $offset = 0): ?RouteMathInterface
     {
         $path = $request->getUri()->getPath();
-        $routeExp = '/' . str_replace('/', '\/', $this->route) . '/A';
+        $routeExp = '/' . str_replace('/', '\/', $this->pattern) . '/A';
 
         $matchResult = preg_match($routeExp, $path, $matches, 0, $offset);
 
@@ -77,6 +78,30 @@ class Route implements RouteInterface, IteratorAggregate
     public function getIterator(): Traversable
     {
         return new ArrayIterator($this->children);
+    }
+
+    public function jsonSerialize(): mixed
+    {
+        return [
+            'name' => $this->name,
+            'pattern' => $this->pattern,
+            'params' => $this->params,
+        ];
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function getPattern(): string
+    {
+        return $this->pattern;
+    }
+
+    public function getParams(): array
+    {
+        return $this->params;
     }
 
     public function current(): mixed

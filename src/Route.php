@@ -29,6 +29,7 @@ class Route implements RouteInterface, IteratorAggregate, JsonSerializable
     public function match(RequestInterface $request, int $offset = 0): ?RouteMatchInterface
     {
         $path = $request->getUri()->getPath();
+        $path = $path === '' ? '/' : $path;
         $routeExp = '/' . str_replace('/', '\/', $this->pattern) . '/A';
 
         $matchResult = preg_match($routeExp, $path, $matches, 0, $offset);

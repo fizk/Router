@@ -106,7 +106,74 @@ echo $routes->match(new Request('http://this.is/path/arg'))->getParam('handler')
 
 Routes can be nested "infinitely" deep.
 
+### The Router Class.
+Defining routes with the `->addRoute(...)` syntax can be a bit verbose. This library provides a class than can take in configuration as an array and build the Router Tree, that way the router configuration is a little bit simpler to manage.
+
+```php
+// router.config.php
+return [
+    'base' => [
+        'pattern' => '/',
+        'options' => ['handler' => 'IndexHandler'],
+    ],
+    'albums' => [
+        'pattern' => '/albums',
+        'options' => ['handler' => 'AlbumsHandler'],
+        'children' => [
+            'album' => [
+                'pattern' => '/(?<id>\d+)',
+                'options' => ['handler' => 'AlbumHandler'],
+            ],
+        ]
+    ],
+];
+```
+
+```php
+// index.php
+
+$router = new Router(require './router.config.php');
+
+$request = new Request('http://example.com/albums/1');
+echo $router->match($request)->getParams('handler');
+
+// Will print
+// AlbumHandler
+```
+
+The array key will become the name of the Route. The required `pattern` and `options` keys will be passed to the Route instance. An optional `children` key can be defined, those routes will become children of the parent route.
+
+Because this class has all the configuration inside of it, it can provide a method called `public function construct(string $path, ?array $arguments = []): ?string;` It can construct a URI based off the names you have given to the Routes. An example of this would be:
+```php
+$config = [
+    'index' => [
+        'pattern' => '/',
+        'options' => ['handler' => 'IndexHandler'],
+    ],
+    'albums' => [
+        'pattern' => '/albums',
+        'options' => ['handler' => 'AlbumsHandler'],
+        'children' => [
+            'album' => [
+                'pattern' => '/(?<id>\d+)',
+                'options' => ['handler' => 'AlbumHandler'],
+            ],
+        ]
+    ],
+];
+
+$router = new Router($config);
+echo $router->construct('albums/album', ['id' => 1]);
+
+// This will print
+//  /albums/1
+```
+
+
 ## Example
+This examples uses `Fizk\Router` in conjunction with `Psr\Http\Message\ResponseInterface` and `Psr\Http\Message\ServerRequestInterface`. What is important to understand is that the Router is not going in inject any values from the URI into the `$responce` object or invoke the Controller/Handler. These are things you have to manage on your own.
+
+The benefit of this is that the Router is not dependent on how Controllers/Handlers are implemented or which PSR standard it is using.
 
 ```php
 use Fizk\Router\Route;
@@ -161,6 +228,24 @@ $routes = (new Route('path', '/path', []))
     ->addRoute(new Route('letters', '/(?<id>[a-z]+)', ['controller' => new SomeLetterController()]))
     ->addRoute(new Route('number', '/(?<slug>\d+)', ['controller' => new SomeNumberController]))
     ;
+
+// ...OR USE THE MORE COMPACT WAY OF DEFINING ROUTES
+$routes = new Router([
+    'path' => [
+        'pattern' => '/path',
+        'options' => []
+        'children' => [
+            'letters' => [
+                'pattern' => '/(?<id>[a-z]+)',
+                'options' => ['controller' => new SomeLetterController()]
+            ],
+            'numbers' => [
+                'pattern' => '/(?<slug>\d+)',
+                'options' => ['controller' => new SomeNumberController()]
+            ],
+        ]
+    ]
+]);
 
 // Match Routes against Request Object
 $match = $routes->match($request);

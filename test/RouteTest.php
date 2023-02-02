@@ -3,7 +3,7 @@
 namespace Fizk\Router;
 
 use Fizk\Router\Route;
-use Fizk\Router\RouteMath;
+use Fizk\Router\RouteMatch;
 use PHPUnit\Framework\TestCase;
 use Laminas\Diactoros\Request;
 
@@ -35,7 +35,7 @@ class RouteTest extends TestCase
         $match = $routes->match($request);
 
         //THEN
-        $this->assertInstanceOf(RouteMath::class, $match);
+        $this->assertInstanceOf(RouteMatch::class, $match);
         $this->assertEquals([
             'id' => 1,
             'id2' => 3,

@@ -2,7 +2,7 @@
 
 namespace Fizk\Router;
 
-interface RouteMathInterface
+interface RouteMatchInterface
 {
     public function setParam(string $name, mixed $value): self;
 

@@ -2,8 +2,8 @@
 
 namespace Fizk\Router;
 
-use Fizk\Router\RouteMathInterface;
-use Fizk\Router\RouteMath;
+use Fizk\Router\RouteMatchInterface;
+use Fizk\Router\RouteMatch;
 use Fizk\Router\RouteInterface;
 use Psr\Http\Message\RequestInterface;
 use IteratorAggregate;
@@ -26,7 +26,7 @@ class Route implements RouteInterface, IteratorAggregate, JsonSerializable
         $this->params = $params;
     }
 
-    public function match(RequestInterface $request, int $offset = 0): ?RouteMathInterface
+    public function match(RequestInterface $request, int $offset = 0): ?RouteMatchInterface
     {
         $path = $request->getUri()->getPath();
         $routeExp = '/' . str_replace('/', '\/', $this->pattern) . '/A';
@@ -38,7 +38,7 @@ class Route implements RouteInterface, IteratorAggregate, JsonSerializable
         }
 
         if (strlen($path) <= $offset + strlen($matches[0])) {
-            $match = new RouteMath();
+            $match = new RouteMatch();
             foreach ($matches as $k => $v) {
                 if (!is_numeric($k)) {
                     $match->setAttribute($k, $v);
@@ -126,6 +126,6 @@ class Route implements RouteInterface, IteratorAggregate, JsonSerializable
 
     public function valid(): bool
     {
-        return isset($this->array[$this->position]);
+        return isset($this->children[$this->position]);
     }
 }

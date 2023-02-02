@@ -2,9 +2,9 @@
 
 namespace Fizk\Router;
 
-use Fizk\Router\RouteMathInterface;
+use Fizk\Router\RouteMatchInterface;
 
-class RouteMath implements RouteMathInterface
+class RouteMatch implements RouteMatchInterface
 {
     private array $params = [];
     private array $path = [];

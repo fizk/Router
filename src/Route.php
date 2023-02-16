@@ -10,6 +10,7 @@ use IteratorAggregate;
 use Traversable;
 use ArrayIterator;
 use JsonSerializable;
+use DomainException;
 
 class Route implements RouteInterface, IteratorAggregate, JsonSerializable
 {
@@ -26,7 +27,16 @@ class Route implements RouteInterface, IteratorAggregate, JsonSerializable
         $this->params = $params;
     }
 
-    public function match(RequestInterface $request, int $offset = 0): ?RouteMatchInterface
+    /**
+     * @throws \DomainException
+     */
+    public function match(RequestInterface $request): RouteMatchInterface 
+    {
+        $path = $request->getUri()->getPath();
+        return $this->_match($request) ?: throw new DomainException("Path [$path] did not match any routes");
+    }
+
+    public function _match(RequestInterface $request, int $offset = 0): ?RouteMatchInterface
     {
         $path = $request->getUri()->getPath();
         $path = $path === '' ? '/' : $path;
@@ -54,7 +64,7 @@ class Route implements RouteInterface, IteratorAggregate, JsonSerializable
         }
 
         foreach ($this as $key => $value) {
-            $match = $value->match($request, $offset + strlen($matches[0]));
+            $match = $value->_match($request, $offset + strlen($matches[0]));
             if ($match) {
                 $match->addPath($key);
 
